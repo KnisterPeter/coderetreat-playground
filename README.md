@@ -5,7 +5,7 @@ This is just a simple editor/test/result/log view which allows to train TDD
 ## Usage
 
 Clone and run `npm intall && npm start`.  
-Then open your browser at http://localhost:8080
+Then open your browser at [http://localhost:8080](http://localhost:8080)
 
 ## Features
 
