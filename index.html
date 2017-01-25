@@ -1,0 +1,149 @@
+<html>
+<head>
+    <style type="text/css">
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            overflow: hidden;
+        }
+        #wrapper {
+            width: 100vw;
+            display: flex;
+            flex-direction: row;
+            border-bottom: 1px solid black;
+        }
+        #logs {
+            width: 100vw;
+            height: 47vh;
+            display: flex;
+            flex-direction: row;
+        }
+        .side {
+            width: 50vw;
+        }
+        .side .side-headline {
+            display: block;
+            padding: 3px;
+            font-weight: bold;
+            color: white;
+        }
+        #code {
+            width: 100%;
+            height: 50%;
+        }
+        #wrapper .side .success {
+            background-color: green;
+        }
+        #wrapper .side .fail {
+            background-color: red;
+        }
+        #mocha {
+            font-size: smaller;
+            overflow: scroll;
+            height: 100%;
+        }
+        #console {
+            font-size: smaller;
+            margin: 0;
+            overflow: scroll;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <div class="side">
+            <label class="side-headline" for="code">Code</label>
+            <div id="code"></div>
+        </div>
+        <div class="side">
+            <label class="side-headline" for="playground">Canvas</label>
+            <div id="playground"></div>
+        </div>
+    </div>
+    <div id="logs">
+        <div class="side">
+            <div id="mocha"></div>
+        </div>
+        <div class="side">
+            <pre id="console"></pre>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/3.5.0/chai.js"></script>
+    <script src="node_modules/monaco-editor/min/vs/loader.js"></script>
+    <script type="text/javascript">
+        const htmlLog = document.getElementById('console');
+        const originalLog = console.log;
+        console.log = function(...args) {
+            htmlLog.innerHTML = htmlLog.innerHTML + args.join(' ') + '\n';
+            originalLog.apply(originalLog, args);
+        }
+
+        const params = location.search.substring(1).split('&').reduce((akku, part) => { const parts = part.split('='); akku[parts[0]] = decodeURIComponent(parts[1]); return akku; }, {});
+
+        this.expect = chai.expect;
+        mocha.setup('bdd');
+        const mochaContainer = document.getElementById('mocha');
+
+        const drawResults = function drawResults(failures) {
+            const indicatorLabels = document.querySelectorAll('.side .side-headline');
+            if (failures === 0) {
+                indicatorLabels.forEach(label => {
+                    label.classList.remove('fail');
+                    label.classList.add('success');
+                });
+            } else {
+                indicatorLabels.forEach(label => {
+                    label.classList.remove('success');
+                    label.classList.add('fail');
+                });
+            }
+        }
+
+        let last = undefined;
+        const run = function run(current) {
+            if (current != last) {
+                last = current;
+                mocha.suite.suites = [];
+                mochaContainer.innerHTML = '';
+                try {
+                    eval(current);
+                    mocha.checkLeaks();
+                    const results = mocha.run();
+                    setTimeout(() => drawResults(results.failures), 0);
+                } catch (e) {
+                    drawResults(1);
+                    mochaContainer.innerHTML = `<pre>${e.stack}</pre>`;
+                }
+            }
+        }
+
+        require.config({ paths: { 'vs': 'monaco-editor/min/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            const editor = monaco.editor.create(document.getElementById('code'), {
+                value: params.code || `
+// document.getElementById('playground') will return the right side div
+const add = (a, b) => a + b;
+
+describe('add',() => {
+  it('should return the sum of 1 and 2', () => {
+    expect(add(1, 2)).to.equal(2);
+  });
+});
+`,
+                language: 'javascript'
+            });
+            editor.focus();
+            run(editor.getModel().getValue());
+
+            editor.getModel().onDidChangeContent(() => {
+                const code = editor.getModel().getValue();
+                history.replaceState(undefined, undefined, `/?code=${encodeURIComponent(code)}`);
+                run(code);
+            });
+        });
+    </script>
+</body>
+</html>
