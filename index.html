@@ -102,6 +102,10 @@
             }
         }
 
+        const save = function save(code) {
+            history.replaceState(undefined, undefined, `${location.pathname}?code=${encodeURIComponent(code)}`);
+        }
+
         let last = undefined;
         const run = function run(current) {
             if (current != last) {
@@ -153,12 +157,23 @@ describe('add',() => {
 `,
                 language: 'javascript'
             });
+            // Save shortcut
+            editor.addAction({
+                id: 'save',
+                label: 'Save',
+                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S],
+                keybindingContext: null,
+                run: function(ed) {
+                    save(ed.getModel().getValue());
+                    return null;
+                }
+            });
             editor.focus();
             run(editor.getModel().getValue());
 
             editor.getModel().onDidChangeContent(() => {
                 const code = editor.getModel().getValue();
-                history.replaceState(undefined, undefined, `${location.pathname}?code=${encodeURIComponent(code)}`);
+                save(code);
                 run(code);
             });
         });
