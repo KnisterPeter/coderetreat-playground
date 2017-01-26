@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@types/chai": "^3.4.34",
+    "@types/mocha": "^2.2.38",
     "monaco-editor": "^0.8.0"
   },
   "devDependencies": {

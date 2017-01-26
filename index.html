@@ -122,6 +122,24 @@
 
         require.config({ paths: { 'vs': 'node_modules/monaco-editor/min/vs' }});
         require(['vs/editor/editor.main'], function() {
+            monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+                target: monaco.languages.typescript.ScriptTarget.Latest,
+                allowNonTsExtensions: true
+            });
+            // add mocha.d.ts
+            fetch('node_modules/@types/mocha/index.d.ts')
+                .then(response => response.text())
+                .then(text => {
+                    monaco.languages.typescript.javascriptDefaults.addExtraLib(text, 'mocha.d.ts');
+                });
+            // add chai.d.ts
+            fetch('node_modules/@types/chai/index.d.ts')
+                .then(response => response.text())
+                .then(text => {
+                    monaco.languages.typescript.javascriptDefaults.addExtraLib(text, 'chai.d.ts');
+                });
+            monaco.languages.typescript.javascriptDefaults.addExtraLib('declare var expect: typeof chai.expect;', 'chai-global.d.ts');
+
             const editor = monaco.editor.create(document.getElementById('code'), {
                 value: params.code || `
 // document.getElementById('playground') will return the right side div
