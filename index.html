@@ -39,8 +39,13 @@
             background-color: red;
         }
         #mocha {
-            font-size: smaller;
-            overflow: scroll;
+            display: none;
+        }
+        #mochaFrame {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            width: 100%;
             height: 100%;
         }
         #console {
@@ -65,6 +70,7 @@
     <div id="logs">
         <div class="side">
             <div id="mocha"></div>
+            <iframe id="mochaFrame"></iframe>
         </div>
         <div class="side">
             <pre id="console"></pre>
@@ -87,7 +93,11 @@
         mocha.setup('bdd');
         const mochaContainer = document.getElementById('mocha');
 
-        const drawResults = function drawResults(failures) {
+        const save = function save(code) {
+            history.replaceState(undefined, undefined, `${location.pathname}?code=${encodeURIComponent(code)}`);
+        }
+
+        const updateIndicator = function updateIndicator(failures) {
             const indicatorLabels = document.querySelectorAll('.side .side-headline');
             if (failures === 0) {
                 indicatorLabels.forEach(label => {
@@ -102,10 +112,6 @@
             }
         }
 
-        const save = function save(code) {
-            history.replaceState(undefined, undefined, `${location.pathname}?code=${encodeURIComponent(code)}`);
-        }
-
         let last = undefined;
         const run = function run(current) {
             if (current != last) {
@@ -116,9 +122,9 @@
                     eval(current);
                     mocha.checkLeaks();
                     const results = mocha.run();
-                    setTimeout(() => drawResults(results.failures), 0);
+                    setTimeout(() => updateIndicator(results.failures), 0);
                 } catch (e) {
-                    drawResults(1);
+                    updateIndicator(1);
                     mochaContainer.innerHTML = `<pre>${e.stack}</pre>`;
                 }
             }
