@@ -2,6 +2,8 @@
 
 This is just a simple editor/test/result/log view which allows to train TDD
 
+Use the [demo](https://knisterpeter.github.io/coderetreat-playground/) or clone your own.
+
 ## Usage
 
 Clone and run `npm intall && npm start`.  
