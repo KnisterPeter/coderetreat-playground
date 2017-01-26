@@ -140,7 +140,7 @@ describe('add',() => {
 
             editor.getModel().onDidChangeContent(() => {
                 const code = editor.getModel().getValue();
-                history.replaceState(undefined, undefined, `/?code=${encodeURIComponent(code)}`);
+                history.replaceState(undefined, undefined, `${location.pathname}?code=${encodeURIComponent(code)}`);
                 run(code);
             });
         });
