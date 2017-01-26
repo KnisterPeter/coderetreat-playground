@@ -87,14 +87,24 @@
             originalLog.apply(originalLog, args);
         }
 
-        const params = location.search.substring(1).split('&').reduce((akku, part) => { const parts = part.split('='); akku[parts[0]] = decodeURIComponent(parts[1]); return akku; }, {});
+        const getUrlParams = function getUrlParams(query) {
+            return query.substring(1).split('&').reduce((akku, part) => { const parts = part.split('='); akku[parts[0]] = decodeURIComponent(parts[1]); return akku; }, {});
+        }
+
+        const createUrl = function createUrl(opts) {
+            return `${location.pathname}?code=${encodeURIComponent(opts.code || '')}&grep=${encodeURIComponent(opts.grep || '')}`;
+        }
 
         this.expect = chai.expect;
         mocha.setup('bdd');
         const mochaContainer = document.getElementById('mocha');
 
         const save = function save(code) {
-            history.replaceState(undefined, undefined, `${location.pathname}?code=${encodeURIComponent(code)}`);
+            const url = createUrl({
+                code,
+                grep: getUrlParams(location.search).grep
+            })
+            history.replaceState(undefined, undefined, url);
         }
 
         const updateIndicator = function updateIndicator(failures) {
@@ -112,6 +122,30 @@
             }
         }
 
+        const mochaFrame = document.getElementById('mochaFrame');
+        (function setupFrame() {
+            mochaFrame.contentWindow.document.head.innerHTML =
+                '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.min.css">';
+            mochaFrame.contentWindow.document.body.innerHTML = '<div id="mocha"></div>';
+            mochaFrame.contentWindow.document.addEventListener('click', e => {
+                e.preventDefault();
+                if (e.target.tagName === 'A') {
+                    const a = document.createElement('a');
+                    a.href = e.target.href;
+                    console.log(a.search);
+                    const mochaParams = getUrlParams(a.search);
+                    const url = createUrl({
+                        code: getUrlParams(location.search).code,
+                        grep: mochaParams.grep
+                    });
+                    location.href = url;
+                }
+            });
+        })();
+        const updateFrame = function updateFrame() {
+            mochaFrame.contentWindow.mocha.innerHTML = mochaContainer.innerHTML;
+        }
+
         let last = undefined;
         const run = function run(current) {
             if (current != last) {
@@ -122,9 +156,13 @@
                     eval(current);
                     mocha.checkLeaks();
                     const results = mocha.run();
-                    setTimeout(() => updateIndicator(results.failures), 0);
+                    setTimeout(() => {
+                        updateIndicator(results.failures);
+                        updateFrame();
+                    }, 0);
                 } catch (e) {
                     updateIndicator(1);
+                    updateFrame();
                     mochaContainer.innerHTML = `<pre>${e.stack}</pre>`;
                 }
             }
@@ -151,7 +189,7 @@
             monaco.languages.typescript.javascriptDefaults.addExtraLib('declare var expect: typeof chai.expect;', 'chai-global.d.ts');
 
             const editor = monaco.editor.create(document.getElementById('code'), {
-                value: params.code || `
+                value: getUrlParams(location.search).code || `
 // document.getElementById('playground') will return the right side div
 const add = (a, b) => a + b;
 
