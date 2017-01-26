@@ -161,9 +161,11 @@
                         updateFrame();
                     }, 0);
                 } catch (e) {
-                    updateIndicator(1);
-                    updateFrame();
-                    mochaContainer.innerHTML = `<pre>${e.stack}</pre>`;
+                    setTimeout(() => {
+                        mochaContainer.innerHTML = `<pre>${e.stack}</pre>`;
+                        updateIndicator(1);
+                        updateFrame();
+                    }, 0);
                 }
             }
         }
