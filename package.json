@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "http-server": "^0.9.0",
-    "monaco-editor": "file:monaco-editor"
+    "monaco-editor": "^0.8.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "http-server": "^0.9.0"
+  },
   "scripts": {
     "start": "http-server",
     "test": "echo \"Error: no test specified\" && exit 1"
