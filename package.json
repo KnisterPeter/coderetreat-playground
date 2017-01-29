@@ -6,14 +6,20 @@
   "dependencies": {
     "@types/chai": "^3.4.34",
     "@types/mocha": "^2.2.38",
+    "mocha": "^3.2.0",
     "monaco-editor": "^0.8.0"
   },
   "devDependencies": {
-    "http-server": "^0.9.0"
+    "chai": "^3.5.0",
+    "common-tags": "^1.4.0",
+    "http-server": "^0.9.0",
+    "webpack": "^1.14.0"
   },
   "scripts": {
+    "build": "webpack",
     "start": "http-server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "package": "npm install && npm run build && npm prune --production"
   },
   "author": "",
   "license": "MIT"
