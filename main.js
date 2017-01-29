@@ -81,7 +81,10 @@ const runInSandbox = function runInSandbox(code) {
     script.src = 'node_modules/mocha/mocha.js';
     script.onload = () => {
       try {
+        mochaWindow.win = window;
+        mochaWindow.doc = document;
         mochaWindow.expect = chai.expect;
+
         mochaWindow.mocha.setup('bdd');
         mochaWindow.eval(code);
         mochaWindow.mocha.checkLeaks();
@@ -127,15 +130,22 @@ module.exports = function main() {
 
   const editor = monaco.editor.create(document.getElementById('code'), {
     value: getUrlParams(location.search).code || commonTags.stripIndent`
-        // document.getElementById('playground') will return the right side div
-        const add = (a, b) => a + b;
+      // Global variables:
+      // * doc - the top-level document
+      // * win - the top-level window
+      //
+      // So for example:
+      // doc.getElementById('playground') // will return the right side div
+      // win.location.reload() // will reload the entire playground
+      //
+      const add = (a, b) => a + b;
 
-        describe('add',() => {
-          it('should return the sum of 1 and 2', () => {
-            expect(add(1, 2)).to.equal(2);
-          });
+      describe('add',() => {
+        it('should return the sum of 1 and 2', () => {
+          expect(add(1, 2)).to.equal(2);
         });
-      `,
+      });
+    `,
     language: 'javascript'
   });
   // Save shortcut
