@@ -161,6 +161,8 @@ this["CoderetreatPlayground"] =
 	    target: monaco.languages.typescript.ScriptTarget.Latest,
 	    allowNonTsExtensions: true
 	  });
+	  monaco.languages.typescript.javascriptDefaults.addExtraLib('declare var win: typeof window;', 'win-global.d.ts');
+	  monaco.languages.typescript.javascriptDefaults.addExtraLib('declare var doc: typeof document;', 'doc-global.d.ts');
 	  // add mocha.d.ts
 	  fetch('node_modules/@types/mocha/index.d.ts')
 	    .then(response => response.text())
