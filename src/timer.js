@@ -1,7 +1,7 @@
 let interval;
 let timeout;
 
-const updateTimer = function updateTimer() {
+function updateTimer() {
     if (timeout) {
         clearTimeout(timeout);
         document.getElementById('btn-timer').innerHTML = 'Start Timer';

@@ -2,10 +2,11 @@ const commonTags = require('common-tags');
 const debounce = require('lodash.debounce');
 
 const { getUrlParams, save } = require('./persistence');
+const { run: runTests } = require('./tests');
 const { run } = require('./run');
 
 let editor;
-const setup = function setup() {
+function setup() {
     monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
         target: monaco.languages.typescript.ScriptTarget.Latest,
         allowNonTsExtensions: true
@@ -65,15 +66,17 @@ const setup = function setup() {
     });
     editor.focus();
     run(editor.getModel().getValue());
+    runTests(editor.getModel().getValue());
 
     editor.getModel().onDidChangeContent(debounce(() => {
         const code = editor.getModel().getValue();
         save(code);
         run(code);
+        runTests(code);
     }, 200));
 }
 
-const update = function update(code) {
+function update(code) {
     if (editor) {
         editor.getModel().setValue(code);
     }

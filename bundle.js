@@ -49,7 +49,7 @@ this["CoderetreatPlayground"] =
 	const { updateTimer } = __webpack_require__(2);
 	const { toggleFullscreen } = __webpack_require__(3);
 	const { setup: setupEditor } = __webpack_require__(4);
-	const { setup: setupPresets, load } = __webpack_require__(166);
+	const { setup: setupPresets, load } = __webpack_require__(167);
 
 	module.exports = function main() {
 	  setupEditor();
@@ -96,14 +96,14 @@ this["CoderetreatPlayground"] =
 	  originalError.apply(originalError, args);
 	}
 
-	const formatLog = function format(args) {
+	function formatLog(args) {
 	  return args.join(' ')
 	    .replace(/</g, '&lt;')
 	    .replace(/\n/g, '<br/>')
 	    .replace(/[\t\s]/g, '&nbsp;');
 	}
 
-	const clear = function clear() {
+	function clear() {
 	    htmlLog.innerHTML = '';
 	}
 
@@ -119,7 +119,7 @@ this["CoderetreatPlayground"] =
 	let interval;
 	let timeout;
 
-	const updateTimer = function updateTimer() {
+	function updateTimer() {
 	    if (timeout) {
 	        clearTimeout(timeout);
 	        document.getElementById('btn-timer').innerHTML = 'Start Timer';
@@ -158,7 +158,7 @@ this["CoderetreatPlayground"] =
 /***/ function(module, exports) {
 
 	
-	const updateIndicator = function updateIndicator(failures) {
+	function updateIndicator(failures) {
 	  const indicatorLabels = document.querySelectorAll('.side .side-headline');
 	  if (failures === 0) {
 	    indicatorLabels.forEach(label => {
@@ -173,7 +173,7 @@ this["CoderetreatPlayground"] =
 	  }
 	}
 
-	const toggleFullscreen = function toggleFullscreen() {
+	function toggleFullscreen() {
 	  if (document.isFullScreen || document.webkitIsFullScreen) {
 	    if (document.exitFullscreen) {
 	      document.exitFullscreen();
@@ -203,10 +203,11 @@ this["CoderetreatPlayground"] =
 	const debounce = __webpack_require__(123);
 
 	const { getUrlParams, save } = __webpack_require__(124);
-	const { run } = __webpack_require__(125);
+	const { run: runTests } = __webpack_require__(125);
+	const { run } = __webpack_require__(166);
 
 	let editor;
-	const setup = function setup() {
+	function setup() {
 	    monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
 	        target: monaco.languages.typescript.ScriptTarget.Latest,
 	        allowNonTsExtensions: true
@@ -266,15 +267,17 @@ this["CoderetreatPlayground"] =
 	    });
 	    editor.focus();
 	    run(editor.getModel().getValue());
+	    runTests(editor.getModel().getValue());
 
 	    editor.getModel().onDidChangeContent(debounce(() => {
 	        const code = editor.getModel().getValue();
 	        save(code);
 	        run(code);
+	        runTests(code);
 	    }, 200));
 	}
 
-	const update = function update(code) {
+	function update(code) {
 	    if (editor) {
 	        editor.getModel().setValue(code);
 	    }
@@ -3375,15 +3378,15 @@ this["CoderetreatPlayground"] =
 /* 124 */
 /***/ function(module, exports) {
 
-	const getUrlParams = function getUrlParams(query) {
+	function getUrlParams(query) {
 	  return query.substring(1).split('&').reduce((akku, part) => { const parts = part.split('='); akku[parts[0]] = decodeURIComponent(parts[1]); return akku; }, {});
 	}
 
-	const createUrl = function createUrl(opts) {
+	function createUrl(opts) {
 	  return `${location.pathname}?code=${encodeURIComponent(opts.code || '')}&grep=${encodeURIComponent(opts.grep || '')}`;
 	}
 
-	const save = function save(code) {
+	function save(code) {
 	  const url = createUrl({
 	    code,
 	    grep: getUrlParams(location.search).grep
@@ -3408,7 +3411,7 @@ this["CoderetreatPlayground"] =
 	const { updateIndicator } = __webpack_require__(3);
 
 	const mochaFrame = document.getElementById('mochaFrame');
-	const runInSandbox = function runInSandbox(code) {
+	function runInSandbox(code) {
 	  const mochaWindow = mochaFrame.contentWindow;
 	  // Reset sandbox
 	  mochaWindow.location.reload();
@@ -3457,7 +3460,7 @@ this["CoderetreatPlayground"] =
 	}
 
 	let last = undefined;
-	const run = function run(current) {
+	function run(current) {
 	  if (current != last) {
 	    last = current;
 	    runInSandbox(current);
@@ -11777,6 +11780,19 @@ this["CoderetreatPlayground"] =
 
 /***/ },
 /* 166 */
+/***/ function(module, exports) {
+
+	function run() {
+	    console.log('run...');
+	}
+
+	module.exports = {
+	    run
+	}
+
+
+/***/ },
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	const commonTags = __webpack_require__(5);
@@ -11785,16 +11801,16 @@ this["CoderetreatPlayground"] =
 
 	const select = document.getElementById('sel-preset');
 
-	const setup = function setup() {
+	function setup() {
 	    const keys = Object.keys(presets);
 	    select.innerHTML = keys.map(key => `<option value="${toId(key)}">${key}</option>`).join('\n');
 	}
 
-	const toId = function toId(name) {
+	function toId(name) {
 	    return name.replace(/[ ']/g, '-').toLowerCase();
 	}
 
-	const load = function load() {
+	function load() {
 	    const selected = Object.keys(presets).find(key => toId(key) == select.value);
 	    updateEditor(presets[selected]);
 	}

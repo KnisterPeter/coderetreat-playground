@@ -1,5 +1,5 @@
 
-const updateIndicator = function updateIndicator(failures) {
+function updateIndicator(failures) {
   const indicatorLabels = document.querySelectorAll('.side .side-headline');
   if (failures === 0) {
     indicatorLabels.forEach(label => {
@@ -14,7 +14,7 @@ const updateIndicator = function updateIndicator(failures) {
   }
 }
 
-const toggleFullscreen = function toggleFullscreen() {
+function toggleFullscreen() {
   if (document.isFullScreen || document.webkitIsFullScreen) {
     if (document.exitFullscreen) {
       document.exitFullscreen();

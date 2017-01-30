@@ -4,16 +4,16 @@ const { update: updateEditor } = require('./editor');
 
 const select = document.getElementById('sel-preset');
 
-const setup = function setup() {
+function setup() {
     const keys = Object.keys(presets);
     select.innerHTML = keys.map(key => `<option value="${toId(key)}">${key}</option>`).join('\n');
 }
 
-const toId = function toId(name) {
+function toId(name) {
     return name.replace(/[ ']/g, '-').toLowerCase();
 }
 
-const load = function load() {
+function load() {
     const selected = Object.keys(presets).find(key => toId(key) == select.value);
     updateEditor(presets[selected]);
 }

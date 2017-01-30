@@ -17,14 +17,14 @@ console.error = function error(...args) {
   originalError.apply(originalError, args);
 }
 
-const formatLog = function format(args) {
+function formatLog(args) {
   return args.join(' ')
     .replace(/</g, '&lt;')
     .replace(/\n/g, '<br/>')
     .replace(/[\t\s]/g, '&nbsp;');
 }
 
-const clear = function clear() {
+function clear() {
     htmlLog.innerHTML = '';
 }
 
