@@ -1,5 +1,6 @@
 const chai = require('chai');
 const commonTags = require('common-tags');
+const debounce = require('lodash.debounce');
 
 const htmlLog = document.getElementById('console');
 const originalLog = console.log;
@@ -164,11 +165,11 @@ module.exports = function main() {
   editor.focus();
   run(editor.getModel().getValue());
 
-  editor.getModel().onDidChangeContent(() => {
+  editor.getModel().onDidChangeContent(debounce(() => {
     const code = editor.getModel().getValue();
     save(code);
     run(code);
-  });
+  }, 200));
 
   document.getElementById('btn-reset').addEventListener('click', e => {
     location.href = location.pathname;
