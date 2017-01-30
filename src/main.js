@@ -169,4 +169,56 @@ module.exports = function main() {
     save(code);
     run(code);
   });
+
+  document.getElementById('btn-reset').addEventListener('click', e => {
+    location.href = location.pathname;
+  });
+  let interval;
+  let timeout;
+  document.getElementById('btn-timer').addEventListener('click', e => {
+    if (timeout) {
+      clearTimeout(timeout);
+      document.getElementById('btn-timer').innerHTML = 'Start Timer';
+      timeout = undefined;
+      clearInterval(interval);
+      interval = undefined;
+    } else {
+      const timer = prompt('How long to set a timer (in minutes)?', '45');
+      if (timer) {
+        const timerms = parseInt(timer, 10) * 60 * 1000;
+        const start = new Date().getTime();
+        interval = setInterval(() => {
+          const now = new Date().getTime();
+          const timeout = (timerms - (now - start)) / 1000;
+          document.getElementById('btn-timer').innerHTML =
+            `Clear Timer ${parseInt(timeout / 60, 10)}:${parseInt(timeout % 60, 10)}`;
+        }, 1000);
+        timeout = setTimeout(() => {
+          alert('Time out');
+          document.getElementById('btn-timer').innerHTML = 'Start Timer';
+          timeout = undefined;
+          clearInterval(interval);
+          interval = undefined;
+        }, timerms);
+      }
+    }
+  });
+  document.getElementById('btn-clear').addEventListener('click', e => {
+    htmlLog.innerHTML = '';
+  });
+  document.getElementById('btn-fullscreen').addEventListener('click', e => {
+    if (document.isFullScreen || document.webkitIsFullScreen) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    } else {
+      if (document.documentElement.requestFullScreen) {
+        document.documentElement.requestFullScreen();
+      } else if (document.documentElement.webkitRequestFullScreen) {
+        document.documentElement.webkitRequestFullScreen();
+      }
+    }
+  });
 };

@@ -7,6 +7,10 @@
             font-family: sans-serif;
             overflow: hidden;
         }
+        #topbar {
+            width: 100vw;
+            border-bottom: 1px solid black;
+        }
         #wrapper {
             width: 100vw;
             display: flex;
@@ -61,6 +65,12 @@
     </style>
 </head>
 <body>
+    <div id="topbar">
+        <button id="btn-reset">Reset Playground</button>
+        <button id="btn-timer">Start Timer</button>
+        <button id="btn-clear">Clear console</button>
+        <button id="btn-fullscreen">Fullscreen</button>
+    </div>
     <div id="wrapper">
         <div class="side">
             <label class="side-headline" for="code">Code</label>
