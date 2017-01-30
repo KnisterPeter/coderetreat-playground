@@ -4,6 +4,7 @@ const debounce = require('lodash.debounce');
 const { getUrlParams, save } = require('./persistence');
 const { run } = require('./run');
 
+let editor;
 const setup = function setup() {
     monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
         target: monaco.languages.typescript.ScriptTarget.Latest,
@@ -25,25 +26,31 @@ const setup = function setup() {
         });
     monaco.languages.typescript.javascriptDefaults.addExtraLib('declare var expect: typeof chai.expect;', 'chai-global.d.ts');
 
-    const editor = monaco.editor.create(document.getElementById('code'), {
+    editor = monaco.editor.create(document.getElementById('code'), {
         value: getUrlParams(location.search).code || commonTags.stripIndent`
-      // Global variables:
-      // * doc - the top-level document
-      // * win - the top-level window
-      //
-      // So for example:
-      // doc.getElementById('playground') // will return the right side div
-      // win.location.reload() // will reload the entire playground
-      //
-      const add = (a, b) => a + b;
+            // Global variables:
+            // * doc - the top-level document
+            // * win - the top-level window
+            //
+            // So for example:
+            // doc.getElementById('playground') // will return the right side div
+            // win.location.reload() // will reload the entire playground
+            //
+            const add = (a, b) => a + b;
 
-      describe('add',() => {
-        it('should return the sum of 1 and 2', () => {
-          expect(add(1, 2)).to.equal(2);
-        });
-      });
-    `,
-        language: 'javascript'
+            describe('add',() => {
+                it('should return the sum of 1 and 2', () => {
+                expect(add(1, 2)).to.equal(2);
+                });
+            });
+        `,
+        language: 'javascript',
+        automaticLayout: true,
+        wrappingColumn: 110,
+        wrappingIndent: 'indent',
+        renderWhitespace: 'boundary',
+        rulers: [110],
+        scrollBeyondLastLine: false
     });
     // Save shortcut
     editor.addAction({
@@ -66,6 +73,13 @@ const setup = function setup() {
     }, 200));
 }
 
+const update = function update(code) {
+    if (editor) {
+        editor.getModel().setValue(code);
+    }
+}
+
 module.exports = {
-    setup
+    setup,
+    update
 };
