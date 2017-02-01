@@ -8,8 +8,14 @@
             overflow: hidden;
         }
         #topbar {
+            position: relative;
             width: 100vw;
             border-bottom: 1px solid black;
+        }
+        .topbar-right {
+            position: absolute;
+            top: 0;
+            right: 0;
         }
         #wrapper {
             width: 100vw;
@@ -74,6 +80,11 @@
             <option value="">...</option>
         </select>
         <button id="btn-preset">Load preset</button>
+        <div class="topbar-right">
+            <a href="https://github.com/KnisterPeter/coderetreat-playground">
+                Github
+            </a>
+        </div>
     </div>
     <div id="wrapper">
         <div class="side">
